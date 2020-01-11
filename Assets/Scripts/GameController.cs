@@ -58,17 +58,26 @@ public class GameController : MonoBehaviour {
         // Randomly generate event (or none at all)
         // Event e = new Event();
         Event e = Event.createRandom();
-        
+        if (e != null) {
+            EventOutcome eOutcome = populateEventPanel(e);
+            if (eOutcome != null && e.interactive) {
+                getPlayerEventResponse(e);
+                // eOutcome = e.getEventOutcome(playerResponse);
+            }
+        }
 
-        // TODO: Present the event to the user, and get their response
 
-
-        // Now allow the player to make an aditional action
+        // TODO Now allow the player to make an aditional action
 
     }
 
-    private void populateEventPanel(Event e) {
-        e
+    private EventOutcome populateEventPanel(Event e) {
+        // TODO
+        return new EventOutcome();
+    }
+
+    private void getPlayerEventResponse(Event e) {
+        // TODO
     }
 
     private void endDay() {

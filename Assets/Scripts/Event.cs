@@ -1,4 +1,5 @@
 ﻿using System;
+// using UnityEngine;
 
 public class Event {
     public enum EventType {
@@ -18,13 +19,29 @@ public class Event {
 
     public String name;
     public String description;
-
-    private Event(EventType type) {
-        this.type = type;
-    }
+    public bool interactive = false;
 
     public static Event createRandom() {
-        return new Event(eventTypes[rnd.Next(eventTypes.Length)]);
+        EventType type = eventTypes[rnd.Next(eventTypes.Length)];
+        switch(type) {
+            case EventType.Attack:
+                return new AttackEvent();
+            case EventType.Infiltrator:
+                return new InfiltratorEvent();
+            case EventType.OvernightThief:
+                return new OvernightThiefEvent();
+            case EventType.Trader:
+                return new TraderEvent();
+            case EventType.Refugee:
+                return new RefugeeEvent();
+            case EventType.Beggar:
+                return new BeggarEvent();
+            case EventType.Nothing:
+                return null;
+            default:
+                // Debug.Log("Invalid event type randomly generated");
+                return null;
+        }
     }
 
 }
