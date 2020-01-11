@@ -7,7 +7,8 @@ public class Event {
         OvernightThief,
         Trader,
         Refugee,
-        Beggar
+        Beggar,
+        Nothing
     }
 
     private static EventType[] eventTypes = new[] {EventType.Attack, EventType.Infiltrator, 
@@ -19,7 +20,7 @@ public class Event {
         this.type = type;
     }
 
-    public static Event create() {
+    public static Event createRandom() {
         return new Event(eventTypes[rnd.Next(eventTypes.Length)]);
     }
 
