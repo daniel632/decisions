@@ -4,8 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
-    
+
     [Header("UI Elements")]
+
+    [Header("Game Config")]
+    public int MAX_DAYS;
 
     [Header("Top Left")]
     public Text dayNumTextUI;
@@ -17,6 +20,16 @@ public class GameController : MonoBehaviour {
     public Text suppliesTextUI;
     public Text medicalTextUI;
     public Text energyTextUI;
+
+    [Header("Panels")]
+    public RectTransform eventPanel;
+    // These optional panels are for when the player needs to respond to an event
+    public RectTransform optionalEventFollowUpPanel; 
+    public RectTransform optionalEventOutcomePanel;
+    public RectTransform actionPanel;
+    public RectTransform actionOutcomePanel;
+    public RectTransform pauseMenuPanel;
+    public RectTransform gameOverPanel;
 
     GameState gs;
 
@@ -45,12 +58,17 @@ public class GameController : MonoBehaviour {
         // Randomly generate event (or none at all)
         // Event e = new Event();
         Event e = Event.createRandom();
+        
 
         // TODO: Present the event to the user, and get their response
 
 
         // Now allow the player to make an aditional action
 
+    }
+
+    private void populateEventPanel(Event e) {
+        e
     }
 
     private void endDay() {

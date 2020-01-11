@@ -16,6 +16,9 @@ public class Event {
     public static Random rnd = new Random();
     public EventType type;
 
+    public String name;
+    public String description;
+
     private Event(EventType type) {
         this.type = type;
     }
