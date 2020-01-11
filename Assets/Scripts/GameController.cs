@@ -1,8 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
+    
+    [Header("UI Elements")]
+
+    [Header("Top Left")]
+    public Text dayNumTextUI;
+    public Text numPeopleTextUI;
+    public Text defenseTextUI;
+    public Text moraleTextUI;
+
+    [Header("Top Right")]
+    public Text suppliesTextUI;
+    public Text medicalTextUI;
+    public Text energyTextUI;
+
     GameState gs;
 
     private bool hasQuit = false;
@@ -32,7 +47,7 @@ public class GameController : MonoBehaviour {
         Event e = Event.createRandom();
 
         // TODO: Present the event to the user, and get their response
-        
+
 
         // Now allow the player to make an aditional action
 
