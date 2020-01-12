@@ -38,42 +38,89 @@ public class GameController : MonoBehaviour {
     void Start() {
         gs = GameState.getGameState();
 
-        run();
+        StartCoroutine(run());
     }
 
     void Update() {
         // TODO: If player presses esc, ask them if they want to quit. Then set hasQuit if true.
     }
 
-    private void run() {
+    private IEnumerator run() {
         while (gs.numPeople > 0 && !hasQuit) {
-            startDay();
+            presentEventPanel();
+            yield return new WaitUntil(() => !this.eventPanel.gameObject.activeSelf);
+            yield return new WaitForSeconds(5);
+
+            presentActionPanel();
+            yield return new WaitUntil(() => !this.actionPanel.gameObject.activeSelf);
+            yield return new WaitForSeconds(2);
+            presentActionOutcomePanel();
+
             endDay();
         }
         
         // TODO: Display Game Over view (number of days survived, and maybe some interesting info like max number of survivors)
     }
 
-    private void startDay() {
-        // Randomly generate event (or none at all)
-        // Event e = new Event();
+    private void presentEventPanel() {
         Event e = Event.createRandom();
         if (e != null) {
-            EventOutcome eOutcome = populateEventPanel(e);
-            if (eOutcome != null && e.interactive) {
-                getPlayerEventResponse(e);
-                // eOutcome = e.getEventOutcome(playerResponse);
-            }
+            Debug.Log(e.name + " - " + e.description);
+            populateEventPanel(e);
+            
+
+
+            // if (eOutcome != null && e.interactive) {
+            //     getPlayerEventResponse(e);
+            //     // eOutcome = e.getEventOutcome(playerResponse);
+            // }
         }
-
-
-        // TODO Now allow the player to make an aditional action
 
     }
 
-    private EventOutcome populateEventPanel(Event e) {
-        // TODO
-        return new EventOutcome();
+    private void presentActionPanel() {
+        List<Action> actions = Actions.createRandomActions();
+        populateActionPanel(actions);
+    }
+
+    private void presentActionOutcomePanel() {
+        Debug.Log("Action Outcome Panel");
+        this.actionOutcomePanel.gameObject.SetActive(true);
+    }
+
+    private void populateEventPanel(Event e) {
+        Debug.Log("Event Panel");
+        this.eventPanel.gameObject.SetActive(true);
+        Text title = (Text)this.eventPanel.Find("Title").GetComponent<Text>();
+        Text desc = (Text)this.eventPanel.Find("Description").GetComponent<Text>();
+        if (title != null && desc != null) {
+            title.text = e.name;
+            desc.text = e.description;
+        }
+    }
+
+    private void populateActionPanel(List<Action> actions) {
+        Debug.Log("Action Panel");
+        this.actionPanel.gameObject.SetActive(true);
+        Button[] btns = {
+            (Button)this.actionPanel.Find("Btn1").GetComponent<Button>(), 
+            (Button)this.actionPanel.Find("Btn2").GetComponent<Button>(), 
+            (Button)this.actionPanel.Find("Btn3").GetComponent<Button>()
+        };
+
+        if (!(btns[0] && btns[1] && btns[2])) {
+            Debug.Log("Error: Action buttons null");
+            return;
+        }
+
+        for (int i = 0; i < btns.Length; i++) {
+            // TODO - null check btn
+            btns[i].gameObject.GetComponentInChildren<Text>().text = actions[i].description;
+        }
+    }
+
+    public void closeEventPanel() {
+        this.eventPanel.gameObject.SetActive(false);
     }
 
     private void getPlayerEventResponse(Event e) {

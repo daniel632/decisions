@@ -1,5 +1,5 @@
 ﻿using System;
-// using UnityEngine;
+using UnityEngine;
 
 public class Event {
     public enum EventType {
@@ -14,7 +14,7 @@ public class Event {
 
     private static EventType[] eventTypes = new[] {EventType.Attack, EventType.Infiltrator, 
         EventType.OvernightThief, EventType.Trader, EventType.Refugee, EventType.Beggar};
-    public static Random rnd = new Random();
+    public static System.Random rnd = new System.Random();
     public EventType type;
 
     public String name;
@@ -39,7 +39,7 @@ public class Event {
             case EventType.Nothing:
                 return null;
             default:
-                // Debug.Log("Invalid event type randomly generated");
+                Debug.Log("Invalid event type randomly generated");
                 return null;
         }
     }

@@ -5,10 +5,8 @@ using UnityEngine;
 public class GameState {
     private static GameState instance = null;
     public int dayNum = 1;
-    public int numPeople = 0;
-    public int morale;
-    public int defense;
-    public int resources;
+    public int numPeople = 1;
+    public Resources resources; // TODO: ensure resources all >= 0
 
     private GameState() {
 

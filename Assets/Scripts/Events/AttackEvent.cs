@@ -8,7 +8,7 @@ public class AttackEvent : Event {
 
     public AttackEvent() {
         this.interactive = true;
-        this.name = "";
+        this.name = "Under Siege";
         this.description = "blah, blah blah blah";
         this.numberOfAttackers = rnd.Next(MAX_NUMBER_OF_ATTACKERS + 1);
     }
