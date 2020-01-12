@@ -19,7 +19,7 @@ Authors: daniel632 (unity / dev) and amybuc (art and design)
 
 ## Description:
 
-The world is at war. You home is now a settlement for remnants of what was once a peaceful society.
+The world is at war. Your home is now a settlement for remnants of what was once a peaceful society.
 
 Survive for as long as you can and try to maximise the number of people you save. Who knows, help may just arrive one day...
 
