@@ -11,6 +11,9 @@ public class GameController : MonoBehaviour {
     public int MAX_DAYS = 100;
     public static int RNG_LEVEL = 5;
 
+    [Header("Canvas")]
+    public RectTransform canvas;
+
     [Header("Top Left")]
     public Text dayNumTextUI;
     public Text numPeopleTextUI;
@@ -58,6 +61,8 @@ public class GameController : MonoBehaviour {
     private int SMALL_PEOPLE_NUM = 10;
     private int SMALL_SUPPLIES_NUM = 15;
     private int MEDIUM_SUPPLIES_NUM = 50;
+    private bool screenIsHidden = false;
+    private bool morningTime = true;
 
     void Start() {
         this.gs = GameState.GetGameState();
@@ -124,17 +129,22 @@ public class GameController : MonoBehaviour {
                 TryUpdateBackgroundArt();
             }
 
-            yield return new WaitForSeconds(1);
-
-            EndDay();
+            this.morningTime = false;
+            StartCoroutine(EndDay());
+            yield return new WaitUntil(() => this.morningTime);
         }
         
         // TODO: Display Game Over view (number of days survived, and maybe some interesting info like max number of survivors)
     }
 
-    private void EndDay() {
+    private IEnumerator EndDay() {
+        StartCoroutine(FadeScreen());
+        yield return new WaitUntil(() => this.screenIsHidden);
         gs.IncrementDayNum();
         UpdateDayCounterUI(this.gs.dayNum);
+        StartCoroutine(ShowScreen());
+        yield return new WaitUntil(() => !this.screenIsHidden);
+        this.morningTime = true;
     }
 
     private void PresentEventOutcomePanel(Event e) {
@@ -258,5 +268,27 @@ public class GameController : MonoBehaviour {
         this.defenseTextUI.text = this.gs.resources.defense.ToString();
         this.moraleTextUI.text = this.gs.resources.morale.ToString();
         this.suppliesTextUI.text = this.gs.resources.supplies.ToString();
+    }
+
+    IEnumerator FadeScreen() {
+        CanvasGroup canvasGroup = this.canvas.GetComponent<CanvasGroup>();
+        while (canvasGroup.alpha > 0) {
+            canvasGroup.alpha -= Time.deltaTime * 2;
+            yield return null;
+        }
+        canvasGroup.interactable = false;
+        this.screenIsHidden = true;
+        yield return null;
+    }
+
+    IEnumerator ShowScreen() {
+        CanvasGroup canvasGroup = this.canvas.GetComponent<CanvasGroup>();
+        while (canvasGroup.alpha < 1) {
+            canvasGroup.alpha += Time.deltaTime * 2;
+            yield return null;
+        }
+        canvasGroup.interactable = true;
+        this.screenIsHidden = false;
+        yield return null;
     }
 }
