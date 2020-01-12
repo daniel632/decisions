@@ -6,9 +6,10 @@ Authors: daniel632 (unity / dev) and amybuc (art and design)
 
 ## TODO:
 
-- Green / red resource highlight during outcome screens to indicate resource increase / decrease
-- Implement randomness for action outcomes
 - Make resources more important. They don't really do anything besides allow the player to transition between events (and even that is broken - read below bug)
+- Implement randomness for action outcomes
+- Green / red resource highlight during outcome screens to indicate resource increase / decrease
+- Audio!
 - Esc / Menu functionality
 
 
