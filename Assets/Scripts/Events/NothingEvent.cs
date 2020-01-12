@@ -5,7 +5,6 @@ using System;
 public class NothingEvent : StaticEvent {
     public NothingEvent() {
         this.name = "";
-        this.description = "";
     }
 
 }

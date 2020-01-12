@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameState {
     private static GameState instance = null;
     public int dayNum { get; set; }
-    public Resources resources { get; set; } // TODO: ensure resources all >= 0
+    public Resources resources { get; set; }
 
     public int numInfiltrators = 0;
 
@@ -29,6 +29,11 @@ public class GameState {
         return this.resources.people;
     }
 
-    // Note: If resources are hit zero, numPeople will decrement
-    // public void UpdateResources()
+    // Note: If resources hit zero, numPeople will decrement
+    public void UpdateResources(Resources res) {
+        this.resources.defense += res.defense;
+        this.resources.morale += res.morale;
+        this.resources.supplies += res.supplies;
+        this.resources.people += res.people;
+    }
 }

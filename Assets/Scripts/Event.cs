@@ -12,30 +12,26 @@ public abstract class Event {
         Nothing
     }
 
-    private static EventType[] eventTypes = new[] {EventType.Attack, EventType.Infiltrator, 
-        EventType.OvernightThief, EventType.Trader, EventType.Refugee, EventType.Beggar};
+    private static EventType[] eventTypes = new[] {
+        EventType.Attack, EventType.Infiltrator, EventType.OvernightThief, EventType.Trader, 
+        EventType.Refugee, EventType.Beggar, EventType.Nothing
+    };
     public static System.Random rnd = new System.Random();
-    public EventType type;
 
     public String name;
-    public String description;
 
     // If an event is interactive, it can have more than one outcome. If static, has at most one outcome (0 for an information based static event)
 
     public static Event CreateRandom() {
         EventType type = eventTypes[rnd.Next(eventTypes.Length)];
         switch(type) {
+            // don't happen before turn 10
             case EventType.Attack:
                 return new AttackEvent();
-            case EventType.Infiltrator:
-                return new InfiltratorEvent();
+            // increase chance if morale is low, don't happen before turn 10
             case EventType.OvernightThief:
                 return new OvernightThiefEvent();
             case EventType.Trader:
-                return new TraderEvent();
-            case EventType.Refugee:
-                return new RefugeeEvent();
-            case EventType.Beggar:
                 return new BeggarEvent();
             case EventType.Nothing:
                 return new NothingEvent();
@@ -48,4 +44,6 @@ public abstract class Event {
     public bool IsInteractive() {
         return this is InteractiveEvent;
     }
+
+    public abstract Outcome getOutcomeIfGenerated();
 }

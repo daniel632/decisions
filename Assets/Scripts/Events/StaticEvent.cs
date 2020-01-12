@@ -1,5 +1,9 @@
 public class StaticEvent : Event {
-    // outcome.resources to null if outcome is only information
+    // TODO: set outcome in constructors
     public Outcome outcome;
+
+    public override Outcome getOutcomeIfGenerated() {
+        return this.outcome;
+    }
 
 }

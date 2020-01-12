@@ -10,4 +10,6 @@ public class Action {
         this.description = "";
     }
 
+    // TODO - implement random information event / action outcome
+
 }

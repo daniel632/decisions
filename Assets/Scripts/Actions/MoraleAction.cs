@@ -3,7 +3,7 @@ public class MoraleAction : Action {
         // TODO - finetune, implement randomness
         // this.cost.res = new Resources(-5, 5, -5);
         this.description = "Make sure everyone is doing ok";
-        this.outcome.res = new Resources(-5, 10, -5, 0);
+        this.outcome.resources = new Resources(-5, 10, -5, 0);
     }
 
 

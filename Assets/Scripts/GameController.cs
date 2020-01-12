@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour {
 
     [Header("Game Config")]
     public int MAX_DAYS = 100;
+    public static int RNG_LEVEL = 5;
 
     [Header("Top Left")]
     public Text dayNumTextUI;
@@ -29,12 +30,28 @@ public class GameController : MonoBehaviour {
     public RectTransform pauseMenuPanel;
     public RectTransform gameOverPanel;
 
+    [Header("Event Choice Buttons")]
+    public Button interactiveEventButton1;
+    public Button interactiveEventButton2;
+    public Button interactiveEventButton3;
+
+    [Header("Action Choice Buttons")]
+    public Button actionChoiceButton1;
+    public Button actionChoiceButton2;
+    public Button actionChoiceButton3;
+
     GameState gs;
 
     private bool hasQuit = false;
+    private int interactiveEventOutcomeChoiceNumber = 0;
+    private int actionChoiceNumber = 0;
+    private Button[] interactiveEventChoiceButtons = null;  // event outcome buttons
+    private Button[] actionChoiceButtons = null;  // event outcome buttons
 
     void Start() {
         this.gs = GameState.GetGameState();
+        this.interactiveEventChoiceButtons = new Button[] { interactiveEventButton1, interactiveEventButton2, interactiveEventButton3 };
+        this.actionChoiceButtons = new Button[] { actionChoiceButton1, actionChoiceButton2, actionChoiceButton3 };
         UpdateResourceCountersUI();
         StartCoroutine(Run());
     }
@@ -44,29 +61,34 @@ public class GameController : MonoBehaviour {
     }
 
     private IEnumerator Run() {
-        while (gs.getNumPeople() > 0 && gs.dayNum <= 100 && !hasQuit) {
+        while (gs.getNumPeople() > 0 && gs.dayNum <= MAX_DAYS && !hasQuit) {
             Event e = Event.CreateRandom();
-            // Interactive:
-            if (e.IsInteractive()) {
-                PresentInteractiveEventPanel(e);
+            if (!(e is NothingEvent)) {
+                // Interactive:
+                if (e.IsInteractive()) {
+                    PresentInteractiveEventPanel((InteractiveEvent) e);
+                    yield return new WaitUntil(() => EventPanelIsHidden());
+                    // Update res
+                    ((InteractiveEvent) e).choiceNum = this.interactiveEventOutcomeChoiceNumber;
+                    gs.UpdateResources(e.getOutcomeIfGenerated().resources);
+                }
+                // Outcome:
+                UpdateResourceCountersUI();
+                PresentEventOutcomePanel(e);
                 yield return new WaitUntil(() => EventPanelIsHidden());
+                yield return new WaitForSeconds(3);
             }
-
-            // TODO: Update res
-
-            // Outcome:
-            UpdateResourceCountersUI();
-            PresentEventOutcomePanel(e);
-            yield return new WaitUntil(() => EventPanelIsHidden());
-            yield return new WaitForSeconds(3);
 
 
             // Action time:
-            PresentActionPanel();
+            List<Action> actions = Actions.CreateRandomActions();
+            PresentActionPanel(actions);
             yield return new WaitUntil(() => !this.actionPanel.gameObject.activeSelf);
-            // TODO: Update res
+            // Update res
+            Action action = actions[this.actionChoiceNumber];
+            gs.UpdateResources(action.outcome.resources);
             UpdateResourceCountersUI();
-            PresentActionOutcomePanel();
+            PresentActionOutcomePanel(action);
             yield return new WaitUntil(() => !this.actionOutcomePanel.gameObject.activeSelf);
             yield return new WaitForSeconds(3);
 
@@ -76,25 +98,27 @@ public class GameController : MonoBehaviour {
         // TODO: Display Game Over view (number of days survived, and maybe some interesting info like max number of survivors)
     }
 
-    private void PresentEventOutcomePanel(Event e) {
-        Debug.Log("Event Outcome Panel");
+    private void EndDay() {
+        gs.IncrementDayNum();
+        UpdateDayCounterUI(this.gs.dayNum);
+    }
 
+    private void PresentEventOutcomePanel(Event e) {
         this.eventOutcomePanel.gameObject.SetActive(true);
 
         Text title = (Text) this.eventOutcomePanel.Find("Title").GetComponent<Text>();
-        Text desc = (Text) this.eventOutcomePanel.Find("Description").GetComponent<Text>();
-        if (title != null && desc != null) {
-            title.text = "Outcome: " + e.name;
-            desc.text = "Outcome: " + e.description;
+        Text outcome = (Text) this.eventOutcomePanel.Find("Description").GetComponent<Text>();
+        if (title != null && outcome != null) {
+            title.text = e.name;
+            outcome.text = e.getOutcomeIfGenerated().information;
         }
     }
 
-    private void PresentInteractiveEventPanel(Event e) {
+    private void PresentInteractiveEventPanel(InteractiveEvent e) {
         if (!e.IsInteractive()) {
             Debug.Log("Static event's should only go through outcome presentation");
             return;
         }
-        Debug.Log("Event Panel");
 
         this.interactiveEventPanel.gameObject.SetActive(true);
 
@@ -105,43 +129,32 @@ public class GameController : MonoBehaviour {
             desc.text = e.description;
         }
 
-        // TODO: populate buttons w/ choices
-
+        // Populate buttons w/ choices
+        for (int i = 0; i < this.interactiveEventChoiceButtons.Length; i++) {
+            this.interactiveEventChoiceButtons[i].GetComponentInChildren<Text>().text = e.choices[i];
+        }
   
     }
 
-    private void PresentActionPanel() {
-        List<Action> actions = Actions.CreateRandomActions();
-
+    private void PresentActionPanel(List<Action> actions) {
         Debug.Log("Action Panel");
         this.actionPanel.gameObject.SetActive(true);
-        Button[] btns = {
-            (Button)this.actionPanel.Find("Btn1").GetComponent<Button>(), 
-            (Button)this.actionPanel.Find("Btn2").GetComponent<Button>(), 
-            (Button)this.actionPanel.Find("Btn3").GetComponent<Button>()
-        };
 
-        if (!(btns[0] && btns[1] && btns[2])) {
-            Debug.Log("Error: Action buttons null");
-            return;
-        }
-
-        for (int i = 0; i < btns.Length; i++) {
-            // TODO - null check btn
-            btns[i].gameObject.GetComponentInChildren<Text>().text = actions[i].description;
+        // TODO - null check btns
+        for (int i = 0; i < actionChoiceButtons.Length; i++) {
+            actionChoiceButtons[i].gameObject.GetComponentInChildren<Text>().text = actions[i].description;
         }
     }
 
     // TODO - access the chosen action in here to populate outcome info
-    private void PresentActionOutcomePanel() {
-        Debug.Log("Action Outcome Panel");
+    private void PresentActionOutcomePanel(Action action) {
         this.actionOutcomePanel.gameObject.SetActive(true);
 
         Text title = (Text) this.actionOutcomePanel.Find("Title").GetComponent<Text>();
         Text desc = (Text) this.actionOutcomePanel.Find("Description").GetComponent<Text>();
         if (title != null && desc != null) {
-            title.text = "ACTION TITLE";
-            desc.text = "ACTION DESC";
+            title.text = action.description;
+            desc.text = "ACTION DESC"; // TODO: use action.outcome to populate description
         }
     }
 
@@ -166,15 +179,13 @@ public class GameController : MonoBehaviour {
         this.actionOutcomePanel.gameObject.SetActive(false);
     }
 
-    private void GetPlayerEventResponse(Event e) {
-        // TODO
+    public void OnInteractiveEventChoiceButtonClicked(int btnNumber) { // TODO -- link in editor
+        this.interactiveEventOutcomeChoiceNumber = btnNumber;
     }
 
-    private void EndDay() {
-        gs.IncrementDayNum();
-        UpdateDayCounterUI(this.gs.dayNum);
+    public void OnActionChoiceClicked(int btnNumber) { // TODO -- link in editor
+        this.actionChoiceNumber = btnNumber;
     }
-
 
     // PURE UI:
     private void UpdateDayCounterUI(int newDayNum) {
@@ -182,6 +193,7 @@ public class GameController : MonoBehaviour {
     }
 
     private void UpdateResourceCountersUI() {
+        // TODO: make the text red / green for decreasing / increasing resources
         this.numPeopleTextUI.text = this.gs.getNumPeople().ToString();
         this.defenseTextUI.text = this.gs.resources.defense.ToString();
         this.moraleTextUI.text = this.gs.resources.morale.ToString();
