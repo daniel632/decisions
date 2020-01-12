@@ -110,7 +110,7 @@ public class GameController : MonoBehaviour {
         Text outcome = (Text) this.eventOutcomePanel.Find("Description").GetComponent<Text>();
         if (title != null && outcome != null) {
             title.text = e.name;
-            outcome.text = e.getOutcomeIfGenerated().information + e.getOutcomeIfGenerated().ResourcesToString();
+            outcome.text = e.getOutcomeIfGenerated().information + "\n" + e.getOutcomeIfGenerated().ResourcesToString();
         }
     }
 
