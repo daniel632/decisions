@@ -41,6 +41,13 @@ public class GameController : MonoBehaviour {
     public Button actionChoiceButton2;
     public Button actionChoiceButton3;
 
+    [Header("Environment Art")]
+    public RectTransform lessPeople;
+    public RectTransform morePeople;
+    public RectTransform lessSupplies;
+    public RectTransform moreSupplies;
+
+
     GameState gs;
 
     private bool hasQuit = false;
@@ -48,6 +55,9 @@ public class GameController : MonoBehaviour {
     private int actionChoiceNumber = 0;
     private Button[] interactiveEventChoiceButtons = null;  // event outcome buttons
     private Button[] actionChoiceButtons = null;  // event outcome buttons
+    private int SMALL_PEOPLE_NUM = 10;
+    private int SMALL_SUPPLIES_NUM = 15;
+    private int MEDIUM_SUPPLIES_NUM = 50;
 
     void Start() {
         this.gs = GameState.GetGameState();
@@ -58,6 +68,7 @@ public class GameController : MonoBehaviour {
         if (!this.introInfoPanel.gameObject.activeSelf) {
             this.introInfoPanel.gameObject.SetActive(true);
         }
+        this.lessPeople.gameObject.SetActive(true);
 
         StartCoroutine(Run());
     }
@@ -70,6 +81,9 @@ public class GameController : MonoBehaviour {
         yield return new WaitUntil(() => !this.introInfoPanel.gameObject.activeSelf);
 
         while (gs.getNumPeople() > 0 && gs.dayNum <= MAX_DAYS && !hasQuit) {
+            int initPeople = gs.resources.people;
+            int initSupplies = gs.resources.supplies;
+
             Event e = Event.CreateRandom();
             if (!(e is NothingEvent)) {
                 // Interactive:
@@ -84,9 +98,14 @@ public class GameController : MonoBehaviour {
                 UpdateResourceCountersUI();
                 PresentEventOutcomePanel(e);
                 yield return new WaitUntil(() => EventPanelIsHidden());
-                yield return new WaitForSeconds(2);
-            }
+                yield return new WaitForSeconds(1);
 
+                // Show more art appearing if supplies / people changes enough
+                if (gs.resources.people != initPeople || gs.resources.supplies != initSupplies) {
+                    TryUpdateBackgroundArt();
+                }
+                yield return new WaitForSeconds(1);
+            }
 
             // Action time:
             List<Action> actions = Actions.CreateRandomActions();
@@ -98,7 +117,14 @@ public class GameController : MonoBehaviour {
             UpdateResourceCountersUI();
             PresentActionOutcomePanel(action);
             yield return new WaitUntil(() => !this.actionOutcomePanel.gameObject.activeSelf);
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(1);
+
+            // Show more art appearing if supplies / people changes enough
+            if (gs.resources.people != initPeople || gs.resources.supplies != initSupplies) {
+                TryUpdateBackgroundArt();
+            }
+
+            yield return new WaitForSeconds(1);
 
             EndDay();
         }
@@ -167,6 +193,26 @@ public class GameController : MonoBehaviour {
     }
 
     // UI:
+    public void TryUpdateBackgroundArt() {
+        if (gs.resources.people > SMALL_PEOPLE_NUM) {
+            this.morePeople.gameObject.SetActive(true);
+        } else if (gs.resources.people > 0) {
+            this.morePeople.gameObject.SetActive(false);
+        } else {
+            this.lessPeople.gameObject.SetActive(false);
+        }
+
+        if (gs.resources.supplies > MEDIUM_SUPPLIES_NUM) {
+            this.lessSupplies.gameObject.SetActive(true);
+            this.moreSupplies.gameObject.SetActive(true);
+        } else if (gs.resources.supplies > SMALL_SUPPLIES_NUM) {
+            this.lessSupplies.gameObject.SetActive(true);
+            this.moreSupplies.gameObject.SetActive(false);
+        } else {
+            this.lessSupplies.gameObject.SetActive(false);
+            this.moreSupplies.gameObject.SetActive(false);
+        }
+    }
 
     private bool EventPanelIsHidden() {
         return !this.interactiveEventPanel.gameObject.activeSelf && 

@@ -9,7 +9,7 @@ public class BeggarEvent : InteractiveEvent {
         this.choices = new List<string> {"Give some supplies", "Invite to stay", "Do nothing"};
         this.outcomes = new List<Outcome> {
             new Outcome(new Resources(0, rng, -rng, 0), "The wanderer was given some supplies and sent on their way."),
-            new Outcome(new Resources(0, 0, -rng, 1), "The wanderer gladly accepted the offer to stay. There was great division in your settlement that day. Most thought it was the right thing to do, though some feared the wanderer might betray your trust."),
+            new Outcome(new Resources(0, 0, -rng, rng), "The wanderer gladly accepted the offer to stay. There was great division in your settlement that day. Most thought it was the right thing to do, though some feared the wanderer might betray your trust."),
             new Outcome(new Resources(0, -2 * rng, 0, 0), "The wanderer didn't respond. He stood there looking defeated before disappearing into the wilderness. Your settlers were shocked, though some thought it was a smart to conserve resources.")
         };
     }
