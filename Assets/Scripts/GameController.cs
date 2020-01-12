@@ -63,6 +63,7 @@ public class GameController : MonoBehaviour {
     private IEnumerator Run() {
         while (gs.getNumPeople() > 0 && gs.dayNum <= MAX_DAYS && !hasQuit) {
             Event e = Event.CreateRandom();
+            Debug.Log(e.GetType().ToString());
             if (!(e is NothingEvent)) {
                 // Interactive:
                 if (e.IsInteractive()) {
@@ -76,7 +77,7 @@ public class GameController : MonoBehaviour {
                 UpdateResourceCountersUI();
                 PresentEventOutcomePanel(e);
                 yield return new WaitUntil(() => EventPanelIsHidden());
-                yield return new WaitForSeconds(3);
+                yield return new WaitForSeconds(2);
             }
 
 
@@ -90,7 +91,7 @@ public class GameController : MonoBehaviour {
             UpdateResourceCountersUI();
             PresentActionOutcomePanel(action);
             yield return new WaitUntil(() => !this.actionOutcomePanel.gameObject.activeSelf);
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(2);
 
             EndDay();
         }
@@ -116,7 +117,7 @@ public class GameController : MonoBehaviour {
 
     private void PresentInteractiveEventPanel(InteractiveEvent e) {
         if (!e.IsInteractive()) {
-            Debug.Log("Static event's should only go through outcome presentation");
+            Debug.Log("Error: Static event's should only go through outcome presentation");
             return;
         }
 
@@ -137,7 +138,6 @@ public class GameController : MonoBehaviour {
     }
 
     private void PresentActionPanel(List<Action> actions) {
-        Debug.Log("Action Panel");
         this.actionPanel.gameObject.SetActive(true);
 
         // TODO - null check btns
@@ -163,13 +163,14 @@ public class GameController : MonoBehaviour {
             !this.eventOutcomePanel.gameObject.activeSelf;
     }
 
-    public void CloseEventPanel(bool interactive) {
-        if (interactive) {
-            this.interactiveEventPanel.gameObject.SetActive(false);
-        } else {
-            this.eventOutcomePanel.gameObject.SetActive(false);
-        }
+    public void CloseInteractiveEventPanel() {
+        this.interactiveEventPanel.gameObject.SetActive(false);
     }
+
+    public void CloseEventOutcomePanel() {
+        this.eventOutcomePanel.gameObject.SetActive(false);
+    }
+
 
     public void CloseActionPanel() {
         this.actionPanel.gameObject.SetActive(false);
