@@ -63,7 +63,6 @@ public class GameController : MonoBehaviour {
     private IEnumerator Run() {
         while (gs.getNumPeople() > 0 && gs.dayNum <= MAX_DAYS && !hasQuit) {
             Event e = Event.CreateRandom();
-            Debug.Log(e.GetType().ToString());
             if (!(e is NothingEvent)) {
                 // Interactive:
                 if (e.IsInteractive()) {
@@ -111,7 +110,7 @@ public class GameController : MonoBehaviour {
         Text outcome = (Text) this.eventOutcomePanel.Find("Description").GetComponent<Text>();
         if (title != null && outcome != null) {
             title.text = e.name;
-            outcome.text = e.getOutcomeIfGenerated().information;
+            outcome.text = e.getOutcomeIfGenerated().information + e.getOutcomeIfGenerated().ResourcesToString();
         }
     }
 
@@ -139,7 +138,7 @@ public class GameController : MonoBehaviour {
 
     private void PresentActionPanel(List<Action> actions) {
         this.actionPanel.gameObject.SetActive(true);
-
+        
         // TODO - null check btns
         for (int i = 0; i < actionChoiceButtons.Length; i++) {
             actionChoiceButtons[i].gameObject.GetComponentInChildren<Text>().text = actions[i].description;
@@ -152,9 +151,10 @@ public class GameController : MonoBehaviour {
 
         Text title = (Text) this.actionOutcomePanel.Find("Title").GetComponent<Text>();
         Text desc = (Text) this.actionOutcomePanel.Find("Description").GetComponent<Text>();
+
         if (title != null && desc != null) {
             title.text = action.description;
-            desc.text = "ACTION DESC"; // TODO: use action.outcome to populate description
+            desc.text = action.outcome.ResourcesToString(); // TODO: use action.outcome to populate description
         }
     }
 

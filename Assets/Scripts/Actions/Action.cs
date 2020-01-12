@@ -7,7 +7,6 @@ public class Action {
 
     public Action() {
         this.outcome = new Outcome();
-        this.description = "";
     }
 
     // TODO - implement random information event / action outcome
