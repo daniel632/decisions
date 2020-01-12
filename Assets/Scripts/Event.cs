@@ -9,7 +9,7 @@ public abstract class Event {
         Nothing
     }
 
-    private static int INCREASE_NOTHING_CHANCE = 3;
+    private static int INCREASE_NOTHING_CHANCE = 1;
 
     private static EventType[] eventTypes = new[] {
         EventType.Attack, EventType.OvernightThief, EventType.Beggar, EventType.Nothing
@@ -21,7 +21,9 @@ public abstract class Event {
     // If an event is interactive, it can have more than one outcome. If static, has at most one outcome (0 for an information based static event)
 
     public static Event CreateRandom() {
-        EventType type = eventTypes[rnd.Next(eventTypes.Length) + INCREASE_NOTHING_CHANCE];
+        int val = rnd.Next(eventTypes.Length) + INCREASE_NOTHING_CHANCE;
+        int index = val < eventTypes.Length ? val : eventTypes.Length - 1;
+        EventType type = eventTypes[index];
         switch(type) {
             // TODO: don't happen before turn 10
             case EventType.Attack:
