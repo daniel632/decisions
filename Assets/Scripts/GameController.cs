@@ -8,18 +8,17 @@ public class GameController : MonoBehaviour {
     [Header("UI Elements")]
 
     [Header("Game Config")]
-    public int MAX_DAYS;
+    public int MAX_DAYS = 100;
 
     [Header("Top Left")]
     public Text dayNumTextUI;
     public Text numPeopleTextUI;
-    public Text defenseTextUI;
-    public Text moraleTextUI;
 
     [Header("Top Right")]
+    public Text defenseTextUI;
+    public Text moraleTextUI;
     public Text suppliesTextUI;
-    public Text medicalTextUI;
-    public Text energyTextUI;
+
 
     [Header("Panels")]
     public RectTransform interactiveEventPanel; 
@@ -35,8 +34,8 @@ public class GameController : MonoBehaviour {
     private bool hasQuit = false;
 
     void Start() {
-        gs = GameState.GetGameState();
-
+        this.gs = GameState.GetGameState();
+        UpdateResourceCountersUI();
         StartCoroutine(Run());
     }
 
@@ -45,29 +44,31 @@ public class GameController : MonoBehaviour {
     }
 
     private IEnumerator Run() {
-        while (gs.numPeople > 0 && !hasQuit) {
+        while (gs.getNumPeople() > 0 && gs.dayNum <= 100 && !hasQuit) {
             Event e = Event.CreateRandom();
-            Debug.Log("interactive: " + e.IsInteractive());
+            // Interactive:
             if (e.IsInteractive()) {
                 PresentInteractiveEventPanel(e);
-            } else {
-                PresentEventOutcomePanel(e);
-            }
-            yield return new WaitUntil(() => EventPanelIsHidden());
-
-            // Interactive outcome:
-            if (e.IsInteractive()) {
-                yield return new WaitForSeconds(1);
-                PresentEventOutcomePanel(e);
                 yield return new WaitUntil(() => EventPanelIsHidden());
             }
+
+            // TODO: Update res
+
+            // Outcome:
+            UpdateResourceCountersUI();
+            PresentEventOutcomePanel(e);
+            yield return new WaitUntil(() => EventPanelIsHidden());
             yield return new WaitForSeconds(3);
+
 
             // Action time:
             PresentActionPanel();
             yield return new WaitUntil(() => !this.actionPanel.gameObject.activeSelf);
-            yield return new WaitForSeconds(3);
+            // TODO: Update res
+            UpdateResourceCountersUI();
             PresentActionOutcomePanel();
+            yield return new WaitUntil(() => !this.actionOutcomePanel.gameObject.activeSelf);
+            yield return new WaitForSeconds(3);
 
             EndDay();
         }
@@ -171,11 +172,19 @@ public class GameController : MonoBehaviour {
 
     private void EndDay() {
         gs.IncrementDayNum();
+        UpdateDayCounterUI(this.gs.dayNum);
     }
 
 
     // PURE UI:
-    public void UpdateDayCounterUI() {
-        this.dayNumTextUI.text = gs.dayNum.ToString();
+    private void UpdateDayCounterUI(int newDayNum) {
+        this.dayNumTextUI.text = newDayNum.ToString();
+    }
+
+    private void UpdateResourceCountersUI() {
+        this.numPeopleTextUI.text = this.gs.getNumPeople().ToString();
+        this.defenseTextUI.text = this.gs.resources.defense.ToString();
+        this.moraleTextUI.text = this.gs.resources.morale.ToString();
+        this.suppliesTextUI.text = this.gs.resources.supplies.ToString();
     }
 }

@@ -5,14 +5,13 @@ using UnityEngine;
 public class GameState {
     private static GameState instance = null;
     public int dayNum { get; set; }
-    public int numPeople { get; set; }
-    private Resources resources; // TODO: ensure resources all >= 0
+    public Resources resources { get; set; } // TODO: ensure resources all >= 0
 
     public int numInfiltrators = 0;
 
     private GameState() {
         this.dayNum = 1;
-        this.numPeople = 1;
+        this.resources = new Resources(10, 10, 10, 4);
     }
 
     public static GameState GetGameState() {
@@ -24,6 +23,10 @@ public class GameState {
 
     public void IncrementDayNum() {
         this.dayNum++;
+    }
+
+    public int getNumPeople() {
+        return this.resources.people;
     }
 
     // Note: If resources are hit zero, numPeople will decrement
