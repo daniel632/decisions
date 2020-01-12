@@ -29,6 +29,7 @@ public class GameController : MonoBehaviour {
     public RectTransform actionOutcomePanel;
     public RectTransform pauseMenuPanel;
     public RectTransform gameOverPanel;
+    public RectTransform introInfoPanel;
 
     [Header("Event Choice Buttons")]
     public Button interactiveEventButton1;
@@ -53,6 +54,11 @@ public class GameController : MonoBehaviour {
         this.interactiveEventChoiceButtons = new Button[] { interactiveEventButton1, interactiveEventButton2, interactiveEventButton3 };
         this.actionChoiceButtons = new Button[] { actionChoiceButton1, actionChoiceButton2, actionChoiceButton3 };
         UpdateResourceCountersUI();
+        UpdateDayCounterUI(1);
+        if (!this.introInfoPanel.gameObject.activeSelf) {
+            this.introInfoPanel.gameObject.SetActive(true);
+        }
+
         StartCoroutine(Run());
     }
 
@@ -61,6 +67,8 @@ public class GameController : MonoBehaviour {
     }
 
     private IEnumerator Run() {
+        yield return new WaitUntil(() => !this.introInfoPanel.gameObject.activeSelf);
+
         while (gs.getNumPeople() > 0 && gs.dayNum <= MAX_DAYS && !hasQuit) {
             Event e = Event.CreateRandom();
             if (!(e is NothingEvent)) {
@@ -158,6 +166,8 @@ public class GameController : MonoBehaviour {
         }
     }
 
+    // UI:
+
     private bool EventPanelIsHidden() {
         return !this.interactiveEventPanel.gameObject.activeSelf && 
             !this.eventOutcomePanel.gameObject.activeSelf;
@@ -171,6 +181,9 @@ public class GameController : MonoBehaviour {
         this.eventOutcomePanel.gameObject.SetActive(false);
     }
 
+    public void CloseIntroInfoPanel() {
+        this.introInfoPanel.gameObject.SetActive(false);
+    }
 
     public void CloseActionPanel() {
         this.actionPanel.gameObject.SetActive(false);
@@ -190,7 +203,7 @@ public class GameController : MonoBehaviour {
 
     // PURE UI:
     private void UpdateDayCounterUI(int newDayNum) {
-        this.dayNumTextUI.text = newDayNum.ToString();
+        this.dayNumTextUI.text = "Day " + newDayNum.ToString();
     }
 
     private void UpdateResourceCountersUI() {
