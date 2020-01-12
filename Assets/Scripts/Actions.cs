@@ -13,7 +13,7 @@ public class Actions {
     public static System.Random rnd = new System.Random();
 
     // NOTE: Creates three random actions (covering each possible type)
-    public static List<Action> createRandomActions() {
+    public static List<Action> CreateRandomActions() {
         List<Action> actions = new List<Action>();
         actions.Add(new DefenseAction());
         actions.Add(new MoraleAction());

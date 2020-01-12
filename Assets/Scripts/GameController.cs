@@ -35,47 +35,47 @@ public class GameController : MonoBehaviour {
     private bool hasQuit = false;
 
     void Start() {
-        gs = GameState.getGameState();
+        gs = GameState.GetGameState();
 
-        StartCoroutine(run());
+        StartCoroutine(Run());
     }
 
     void Update() {
         // TODO: If player presses esc, ask them if they want to quit. Then set hasQuit if true.
     }
 
-    private IEnumerator run() {
+    private IEnumerator Run() {
         while (gs.numPeople > 0 && !hasQuit) {
-            Event e = Event.createRandom();
-            Debug.Log("interactive: " + e.isInteractive());
-            if (e.isInteractive()) {
-                presentInteractiveEventPanel(e);
+            Event e = Event.CreateRandom();
+            Debug.Log("interactive: " + e.IsInteractive());
+            if (e.IsInteractive()) {
+                PresentInteractiveEventPanel(e);
             } else {
-                presentEventOutcomePanel(e);
+                PresentEventOutcomePanel(e);
             }
-            yield return new WaitUntil(() => eventPanelIsHidden());
+            yield return new WaitUntil(() => EventPanelIsHidden());
 
             // Interactive outcome:
-            if (e.isInteractive()) {
+            if (e.IsInteractive()) {
                 yield return new WaitForSeconds(1);
-                presentEventOutcomePanel(e);
-                yield return new WaitUntil(() => eventPanelIsHidden());
+                PresentEventOutcomePanel(e);
+                yield return new WaitUntil(() => EventPanelIsHidden());
             }
             yield return new WaitForSeconds(3);
 
             // Action time:
-            presentActionPanel();
+            PresentActionPanel();
             yield return new WaitUntil(() => !this.actionPanel.gameObject.activeSelf);
             yield return new WaitForSeconds(3);
-            presentActionOutcomePanel();
+            PresentActionOutcomePanel();
 
-            endDay();
+            EndDay();
         }
         
         // TODO: Display Game Over view (number of days survived, and maybe some interesting info like max number of survivors)
     }
 
-    private void presentEventOutcomePanel(Event e) {
+    private void PresentEventOutcomePanel(Event e) {
         Debug.Log("Event Outcome Panel");
 
         this.eventOutcomePanel.gameObject.SetActive(true);
@@ -88,8 +88,8 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    private void presentInteractiveEventPanel(Event e) {
-        if (!e.isInteractive()) {
+    private void PresentInteractiveEventPanel(Event e) {
+        if (!e.IsInteractive()) {
             Debug.Log("Static event's should only go through outcome presentation");
             return;
         }
@@ -109,8 +109,8 @@ public class GameController : MonoBehaviour {
   
     }
 
-    private void presentActionPanel() {
-        List<Action> actions = Actions.createRandomActions();
+    private void PresentActionPanel() {
+        List<Action> actions = Actions.CreateRandomActions();
 
         Debug.Log("Action Panel");
         this.actionPanel.gameObject.SetActive(true);
@@ -132,7 +132,7 @@ public class GameController : MonoBehaviour {
     }
 
     // TODO - access the chosen action in here to populate outcome info
-    private void presentActionOutcomePanel() {
+    private void PresentActionOutcomePanel() {
         Debug.Log("Action Outcome Panel");
         this.actionOutcomePanel.gameObject.SetActive(true);
 
@@ -144,12 +144,12 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    private bool eventPanelIsHidden() {
+    private bool EventPanelIsHidden() {
         return !this.interactiveEventPanel.gameObject.activeSelf && 
             !this.eventOutcomePanel.gameObject.activeSelf;
     }
 
-    public void closeEventPanel(bool interactive) {
+    public void CloseEventPanel(bool interactive) {
         if (interactive) {
             this.interactiveEventPanel.gameObject.SetActive(false);
         } else {
@@ -157,19 +157,25 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    public void closeActionPanel() {
+    public void CloseActionPanel() {
         this.actionPanel.gameObject.SetActive(false);
     }
 
-    public void closeActionOutcomePanel() {
+    public void CloseActionOutcomePanel() {
         this.actionOutcomePanel.gameObject.SetActive(false);
     }
 
-    private void getPlayerEventResponse(Event e) {
+    private void GetPlayerEventResponse(Event e) {
         // TODO
     }
 
-    private void endDay() {
-        gs.incrementDayNum();
+    private void EndDay() {
+        gs.IncrementDayNum();
+    }
+
+
+    // PURE UI:
+    public void UpdateDayCounterUI() {
+        this.dayNumTextUI.text = gs.dayNum.ToString();
     }
 }

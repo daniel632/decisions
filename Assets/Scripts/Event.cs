@@ -22,7 +22,7 @@ public abstract class Event {
 
     // If an event is interactive, it can have more than one outcome. If static, has at most one outcome (0 for an information based static event)
 
-    public static Event createRandom() {
+    public static Event CreateRandom() {
         EventType type = eventTypes[rnd.Next(eventTypes.Length)];
         switch(type) {
             case EventType.Attack:
@@ -45,7 +45,7 @@ public abstract class Event {
         }
     }
 
-    public bool isInteractive() {
+    public bool IsInteractive() {
         return this is InteractiveEvent;
     }
 }
