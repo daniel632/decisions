@@ -31,7 +31,7 @@ public class GameController : MonoBehaviour {
     public RectTransform actionPanel;
     public RectTransform actionOutcomePanel;
     public RectTransform pauseMenuPanel;
-    public RectTransform gameOverPanel;
+    public RectTransform endGamePanel;
     public RectTransform introInfoPanel;
 
     [Header("Event Choice Buttons")]
@@ -122,7 +122,7 @@ public class GameController : MonoBehaviour {
             UpdateResourceCountersUI();
             PresentActionOutcomePanel(action);
             yield return new WaitUntil(() => !this.actionOutcomePanel.gameObject.activeSelf);
-            yield return new WaitForSeconds(1);
+            // yield return new WaitForSeconds(1);
 
             // Show more art appearing if supplies / people changes enough
             if (gs.resources.people != initPeople || gs.resources.supplies != initSupplies) {
@@ -134,7 +134,7 @@ public class GameController : MonoBehaviour {
             yield return new WaitUntil(() => this.morningTime);
         }
         
-        // TODO: Display Game Over view (number of days survived, and maybe some interesting info like max number of survivors)
+        DisplayEndgamePanel();
     }
 
     private IEnumerator EndDay() {
@@ -249,6 +249,10 @@ public class GameController : MonoBehaviour {
         this.actionOutcomePanel.gameObject.SetActive(false);
     }
 
+    public void CloseApplication() {
+        Application.Quit();
+    }
+
     public void OnInteractiveEventChoiceButtonClicked(int btnNumber) { // TODO -- link in editor
         this.interactiveEventOutcomeChoiceNumber = btnNumber;
     }
@@ -290,5 +294,18 @@ public class GameController : MonoBehaviour {
         canvasGroup.interactable = true;
         this.screenIsHidden = false;
         yield return null;
+    }
+
+    private void DisplayEndgamePanel() {
+        this.endGamePanel.gameObject.SetActive(true);
+        Text title = this.endGamePanel.Find("Title").GetComponent<Text>();
+        Text desc = this.endGamePanel.Find("Description").GetComponent<Text>();
+        if (gs.dayNum > MAX_DAYS && gs.resources.people > 0) {
+            title.text = "You Survived!";
+            desc.text = "Number of survivors: " + gs.resources.people;
+        } else {
+            title.text = "Game Over!";
+            desc.text = "Try again...";
+        }
     }
 }
