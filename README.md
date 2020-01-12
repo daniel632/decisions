@@ -25,3 +25,6 @@ The world is at war. Your home is now a settlement for remnants of what was once
 Survive for as long as you can and try to maximise the number of people you save. Who knows, help may just arrive one day...
 
 You will need to carefully balance your settlement's Defense, Morale and Supplies. These resources will be lost and gained through your everyday survival. Everything has a cost.
+
+
+![Screenshot](Pictures/1.png)
