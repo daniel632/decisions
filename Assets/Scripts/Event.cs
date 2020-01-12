@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class Event {
+public abstract class Event {
     public enum EventType {
         Attack,
         Infiltrator,
@@ -19,7 +19,8 @@ public class Event {
 
     public String name;
     public String description;
-    public bool interactive = false;
+
+    // If an event is interactive, it can have more than one outcome. If static, has at most one outcome (0 for an information based static event)
 
     public static Event createRandom() {
         EventType type = eventTypes[rnd.Next(eventTypes.Length)];
@@ -37,11 +38,14 @@ public class Event {
             case EventType.Beggar:
                 return new BeggarEvent();
             case EventType.Nothing:
-                return null;
+                return new NothingEvent();
             default:
                 Debug.Log("Invalid event type randomly generated");
-                return null;
+                return new NothingEvent();
         }
     }
 
+    public bool isInteractive() {
+        return this is InteractiveEvent;
+    }
 }

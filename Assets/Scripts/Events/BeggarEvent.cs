@@ -1,6 +1,6 @@
 using System;
 
-public class BeggarEvent : Event {
+public class BeggarEvent : InteractiveEvent {
 
     public BeggarEvent() {
         this.name = "Some supplies please";

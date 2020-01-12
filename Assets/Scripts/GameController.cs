@@ -22,10 +22,9 @@ public class GameController : MonoBehaviour {
     public Text energyTextUI;
 
     [Header("Panels")]
-    public RectTransform eventPanel;
-    // These optional panels are for when the player needs to respond to an event
-    public RectTransform optionalEventFollowUpPanel; 
-    public RectTransform optionalEventOutcomePanel;
+    public RectTransform interactiveEventPanel; 
+    // An event outcome can either follow an interactive event, or appears on it's own
+    public RectTransform eventOutcomePanel;
     public RectTransform actionPanel;
     public RectTransform actionOutcomePanel;
     public RectTransform pauseMenuPanel;
@@ -47,13 +46,27 @@ public class GameController : MonoBehaviour {
 
     private IEnumerator run() {
         while (gs.numPeople > 0 && !hasQuit) {
-            presentEventPanel();
-            yield return new WaitUntil(() => !this.eventPanel.gameObject.activeSelf);
-            yield return new WaitForSeconds(5);
+            Event e = Event.createRandom();
+            Debug.Log("interactive: " + e.isInteractive());
+            if (e.isInteractive()) {
+                presentInteractiveEventPanel(e);
+            } else {
+                presentEventOutcomePanel(e);
+            }
+            yield return new WaitUntil(() => eventPanelIsHidden());
 
+            // Interactive outcome:
+            if (e.isInteractive()) {
+                yield return new WaitForSeconds(1);
+                presentEventOutcomePanel(e);
+                yield return new WaitUntil(() => eventPanelIsHidden());
+            }
+            yield return new WaitForSeconds(3);
+
+            // Action time:
             presentActionPanel();
             yield return new WaitUntil(() => !this.actionPanel.gameObject.activeSelf);
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(3);
             presentActionOutcomePanel();
 
             endDay();
@@ -62,44 +75,43 @@ public class GameController : MonoBehaviour {
         // TODO: Display Game Over view (number of days survived, and maybe some interesting info like max number of survivors)
     }
 
-    private void presentEventPanel() {
-        Event e = Event.createRandom();
-        if (e != null) {
-            Debug.Log(e.name + " - " + e.description);
-            populateEventPanel(e);
-            
+    private void presentEventOutcomePanel(Event e) {
+        Debug.Log("Event Outcome Panel");
 
+        this.eventOutcomePanel.gameObject.SetActive(true);
 
-            // if (eOutcome != null && e.interactive) {
-            //     getPlayerEventResponse(e);
-            //     // eOutcome = e.getEventOutcome(playerResponse);
-            // }
+        Text title = (Text) this.eventOutcomePanel.Find("Title").GetComponent<Text>();
+        Text desc = (Text) this.eventOutcomePanel.Find("Description").GetComponent<Text>();
+        if (title != null && desc != null) {
+            title.text = "Outcome: " + e.name;
+            desc.text = "Outcome: " + e.description;
         }
-
     }
 
-    private void presentActionPanel() {
-        List<Action> actions = Actions.createRandomActions();
-        populateActionPanel(actions);
-    }
-
-    private void presentActionOutcomePanel() {
-        Debug.Log("Action Outcome Panel");
-        this.actionOutcomePanel.gameObject.SetActive(true);
-    }
-
-    private void populateEventPanel(Event e) {
+    private void presentInteractiveEventPanel(Event e) {
+        if (!e.isInteractive()) {
+            Debug.Log("Static event's should only go through outcome presentation");
+            return;
+        }
         Debug.Log("Event Panel");
-        this.eventPanel.gameObject.SetActive(true);
-        Text title = (Text)this.eventPanel.Find("Title").GetComponent<Text>();
-        Text desc = (Text)this.eventPanel.Find("Description").GetComponent<Text>();
+
+        this.interactiveEventPanel.gameObject.SetActive(true);
+
+        Text title = (Text) this.interactiveEventPanel.Find("Title").GetComponent<Text>();
+        Text desc = (Text) this.interactiveEventPanel.Find("Description").GetComponent<Text>();
         if (title != null && desc != null) {
             title.text = e.name;
             desc.text = e.description;
         }
+
+        // TODO: populate buttons w/ choices
+
+  
     }
 
-    private void populateActionPanel(List<Action> actions) {
+    private void presentActionPanel() {
+        List<Action> actions = Actions.createRandomActions();
+
         Debug.Log("Action Panel");
         this.actionPanel.gameObject.SetActive(true);
         Button[] btns = {
@@ -119,8 +131,38 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    public void closeEventPanel() {
-        this.eventPanel.gameObject.SetActive(false);
+    // TODO - access the chosen action in here to populate outcome info
+    private void presentActionOutcomePanel() {
+        Debug.Log("Action Outcome Panel");
+        this.actionOutcomePanel.gameObject.SetActive(true);
+
+        Text title = (Text) this.actionOutcomePanel.Find("Title").GetComponent<Text>();
+        Text desc = (Text) this.actionOutcomePanel.Find("Description").GetComponent<Text>();
+        if (title != null && desc != null) {
+            title.text = "ACTION TITLE";
+            desc.text = "ACTION DESC";
+        }
+    }
+
+    private bool eventPanelIsHidden() {
+        return !this.interactiveEventPanel.gameObject.activeSelf && 
+            !this.eventOutcomePanel.gameObject.activeSelf;
+    }
+
+    public void closeEventPanel(bool interactive) {
+        if (interactive) {
+            this.interactiveEventPanel.gameObject.SetActive(false);
+        } else {
+            this.eventOutcomePanel.gameObject.SetActive(false);
+        }
+    }
+
+    public void closeActionPanel() {
+        this.actionPanel.gameObject.SetActive(false);
+    }
+
+    public void closeActionOutcomePanel() {
+        this.actionOutcomePanel.gameObject.SetActive(false);
     }
 
     private void getPlayerEventResponse(Event e) {

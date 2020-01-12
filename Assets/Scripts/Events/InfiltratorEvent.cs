@@ -1,6 +1,6 @@
 using System;
 
-public class InfiltratorEvent : Event {
+public class InfiltratorEvent : InteractiveEvent {
 
     public InfiltratorEvent() {
         this.name = "In need of shelter";

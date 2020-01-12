@@ -8,6 +8,8 @@ public class GameState {
     public int numPeople = 1;
     public Resources resources; // TODO: ensure resources all >= 0
 
+    public int numInfiltrators = 0;
+
     private GameState() {
 
     }

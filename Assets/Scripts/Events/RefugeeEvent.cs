@@ -1,6 +1,6 @@
 using System;
 
-public class RefugeeEvent : Event {
+public class RefugeeEvent : InteractiveEvent {
 
     public RefugeeEvent() {
         this.name = "In need of shelter";

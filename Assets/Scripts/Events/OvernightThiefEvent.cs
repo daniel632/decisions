@@ -1,6 +1,6 @@
 using System;
 
-public class OvernightThiefEvent : Event {
+public class OvernightThiefEvent : StaticEvent {
 
     public OvernightThiefEvent() {
         this.name = "Shattered glass";
